@@ -223,7 +223,7 @@
       const input = document.querySelector("input.main");
       const inputText = input.value.trim();
       if (inputText === "") {
-        input.style.animation = 'shake 0.5s';
+       
         setTimeout(() => {
           input.style.animation = '';
         }, 500);
@@ -246,8 +246,7 @@
       deleteBtn.className = "delete";
       deleteBtn.textContent = "Delete";
       deleteBtn.onclick = function () {
-        mainDiv.style.transform = 'scale(0.8)';
-        mainDiv.style.opacity = '0';
+       
         setTimeout(() => {
           mainDiv.remove();
         }, 300);
@@ -269,20 +268,7 @@
       input.style.borderColor = darkenColor(randomColor, 20);
     }
 
-    function darkenColor(color, percent) {
-      const num = parseInt(color.replace("#", ""), 16);
-      const amt = Math.round(2.55 * percent);
-      const R = (num >> 16) - amt;
-      const G = (num >> 8 & 0x00FF) - amt;
-      const B = (num & 0x0000FF) - amt;
-      return `#${(
-        0x1000000 +
-        (R < 0 ? 0 : R) * 0x10000 +
-        (G < 0 ? 0 : G) * 0x100 +
-        (B < 0 ? 0 : B)
-      ).toString(16).slice(1)}`;
-    }
-
+  
     function handleKeyPress(event) {
       if (event.key === 'Enter') {
         createList();
