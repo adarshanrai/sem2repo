@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Validation</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    
+    h3 {
+      margin-bottom: 5px;
+      color: #333;
+    }
+    
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: #4CAF50;
+      box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+    }
+    
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100%;
+      margin-top: 10px;
+    }
+    
+    button:hover {
+      background-color: #45a049;
+    }
+    
+    #finalMessage {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 20px;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    
+    .error-message {
+      color: red;
+      font-size: 14px;
+      margin-top: -8px;
+      margin-bottom: 10px;
+    }
+    
+    .success-message {
+      color: green;
+      font-size: 16px;
+    }
+    
+    .form-container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Registration Form</h2>
+    
+    <h3>Name</h3>
+    <input type="text" id="name" placeholder="Enter your full name">
+    <p id="Vldname" class="error-message"></p>
+
+    <h3>Email</h3>
+    <input type="text" id="email" placeholder="example@domain.com">
+    <p id="VldEmail" class="error-message"></p>
+
+    <h3>Password</h3>
+    <input type="password" id="password" placeholder="At least 6 characters">
+    <p id="VldPassword" class="error-message"></p>
+
+    <h3>Re-type password</h3>
+    <input type="password" id="confirmPassword" placeholder="Confirm your password">
+    <p id="VldConfirm" class="error-message"></p>
+
+    <h3>Phone Number</h3>
+    <input type="tel" id="phone" maxlength="10" placeholder="10-digit number">
+    <p id="VldPhone" class="error-message"></p>
+
+    <button onclick="validateForm()">Submit</button>
+    <p id="finalMessage"></p>
+  </div>
+
+  <script>
+    function validateForm() {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+      const phone = document.getElementById("phone").value.trim();
+
+      const Vldname = document.getElementById("Vldname");
+      const VldEmail = document.getElementById("VldEmail");
+      const VldPassword = document.getElementById("VldPassword");
+      const VldConfirm = document.getElementById("VldConfirm");
+      const VldPhone = document.getElementById("VldPhone");
+      const finalMessage = document.getElementById("finalMessage");
+
+      let isValid = true;
+
+      const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+      // Reset messages
+      Vldname.textContent = VldEmail.textContent = VldPassword.textContent = VldConfirm.textContent = VldPhone.textContent = finalMessage.textContent = "";
+
+      if (name === "") {
+        Vldname.textContent = "Name cannot be empty.";
+        isValid = false;
+      }
+
+      if (!emailPattern.test(email)) {
+        VldEmail.textContent = "Invalid email format.";
+        isValid = false;
+      }
+
+      if (password.length < 6) {
+        VldPassword.textContent = "Password must be at least 6 characters.";
+        isValid = false;
+      }
+
+      if (password !== confirmPassword) {
+        VldConfirm.textContent = "Passwords do not match.";
+        isValid = false;
+      }
+
+      if (phone.length !== 10 || isNaN(phone)) {
+        VldPhone.textContent = "Phone number must be 10 digits.";
+        isValid = false;
+      }
+
+      if (isValid) {
+        finalMessage.textContent = "Form submitted successfully!";
+        finalMessage.className = "success-message";
+      }
+    }
+  </script>
+</body>
+</html>
