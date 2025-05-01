@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Forecast</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 25px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #057ef6;
+            margin-bottom: 25px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .input-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .coord-inputs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        input, select {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            outline: none;
+        }
+
+        input {
+            flex: 1;
+        }
+
+        button {
+            padding: 12px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background-color: #00095d;
+            transform: translateY(-2px);
+        }
+
+        select {
+            width: 100%;
+        }
+
+        .district-selector {
+            margin-bottom: 15px;
+        }
+
+        .district-selector h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            color: #2c3e50;
+            font-size: 17px;
+        }
+
+        #weatherResult {
+            display: none;
+            margin-top: 25px;
+        }
+
+        .forecast-item {
+            display: flex;
+            gap: 30px;
+            padding: 25px;
+            margin-bottom: 25px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+            transition: all 0.3s;
+            width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .forecast-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+        }
+
+        .weather-gif {
+            width: 180px;
+            height: 158px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .weather-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .weather-date {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #2c3e50;
+            font-size: 20px;
+        }
+
+        .weather-condition {
+            font-size: 17px;
+            margin-bottom: 15px;
+            color: #34495e;
+        }
+
+        .weather-temp {
+            display: flex;
+            gap: 25px;
+            margin: 12px 0;
+            align-items: center;
+        }
+
+        .temp-max {
+            color: #e74c3c;
+            font-weight: 600;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+
+        .temp-min {
+            color: #3498db;
+            font-weight: 600;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+
+        .precipitation {
+            font-weight: 600;
+            color: #9b59b6;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .temp-icon {
+            margin-right: 8px;
+            font-size: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .coord-inputs {
+                flex-direction: column;
+            }
+            
+            .forecast-item {
+                flex-direction: column;
+                gap: 20px;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .weather-gif {
+                width: 150px;
+                height: 150px;
+            }
+        }
+
+        .loading-container {
+            display: none;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .loading-gif {
+            width: 80px;
+            height: 80px;
+        }
+
+        .loading-text {
+            margin-top: 15px;
+            font-weight: 600;
+            color: #3498db;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Weather Forecast</h1>
+        
+        <div class="input-section">
+            <div class="coord-inputs">
+                <input type="text" id="latitude" placeholder="Latitude" required step="any">
+                <input type="text" id="longitude" placeholder="Longitude" required step="any">
+                <button type="button" onclick="getWeather()">Get Weather</button>
+            </div>
+            
+            <div class="district-selector">
+                <h3>Check weather for districts in Sikkim:</h3>
+                <select id="dix" name="district" onchange="getDistrictWeather()">
+                    <option value="">Select District</option>
+                    <option value="Gangtok">Gangtok</option>
+                    <option value="Geyzing">Geyzing</option>
+                    <option value="Namchi">Namchi</option>
+                    <option value="Mangan">Mangan</option>
+                    <option value="Soreng">Soreng</option>
+                    <option value="Pakyong">Pakyong</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="loading-container" id="loadingAnimation">
+            <img src="weather_gifs/index.gif" alt="Loading..." class="loading-gif">
+            <div class="loading-text">Fetching weather data...</div>
+        </div>
+
+        <div id="weatherResult">
+            <div id="forecast"></div>
+        </div>
+    </div>
+
+    <script>
+        const districtCoordinates = {
+            Gangtok: { latitude: 27.3314, longitude: 88.6138 },
+            Geyzing: { latitude: 27.2975, longitude: 88.2575 },
+            Namchi: { latitude: 27.1622, longitude: 88.3674 },
+            Mangan: { latitude: 27.5086, longitude: 88.5778 },
+            Soreng: { latitude: 27.1710, longitude: 88.1993 },
+            Pakyong: { latitude:  27.2648, longitude: 88.5942 },
+        };
+
+        function getDistrictWeather() {
+            const selectedDistrict = document.getElementById("dix").value;
+            if (selectedDistrict && districtCoordinates[selectedDistrict]) {
+                const { latitude, longitude } = districtCoordinates[selectedDistrict];
+                document.getElementById("latitude").value = latitude;
+                document.getElementById("longitude").value = longitude;
+                fetchWeatherData(latitude, longitude);
+            }
+        }
+
+        function getWeather() {
+            const latitude = parseFloat(document.getElementById("latitude").value);
+            const longitude = parseFloat(document.getElementById("longitude").value);
+
+            if (!isNaN(latitude) && !isNaN(longitude)) {
+                fetchWeatherData(latitude, longitude);
+            }
+        }
+
+        function fetchWeatherData(latitude, longitude) {
+            document.getElementById('loadingAnimation').style.display = 'block';
+            document.getElementById('weatherResult').style.display = 'none';
+            
+            setTimeout(() => {
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode&timezone=Asia/Kolkata`;
+
+                fetch(url)
+                    .then(res => res.json())
+                    .then(data => {
+                        document.getElementById('loadingAnimation').style.display = 'none';
+                        
+                        if (data && data.daily) {
+                            displayWeather(data);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error fetching weather data:", error);
+                        document.getElementById('loadingAnimation').style.display = 'none';
+                    });
+            }, 1500);
+        }
+
+        function displayWeather(data) {
+            const forecast = data.daily;
+            document.getElementById("forecast").innerHTML = "";
+
+            const weatherConditions = {
+                0: { description: "Clear Sky", gif: "weather_gifs/clearsky.gif", icon: "☀️" },
+                1: { description: "Partly Cloudy", gif: "weather_gifs/prtly.gif", icon: "⛅" },
+                2: { description: "Cloudy", gif: "weather_gifs/cloudy.gif", icon: "☁️" },
+                3: { description: "Overcast", gif: "weather_gifs/overcast.gif", icon: "☁️" },
+                56: { description: "Freezing drizzle", gif: "weather_gifs/freezing.gif", icon: "❄️" },
+                61: { description: "Rain", gif: "weather_gifs/rain.gif", icon: "🌧️" },
+                71: { description: "Snow", gif: "weather_gifs/snowy.gif", icon: "❄️" },
+                80: { description: "Showers", gif: "weather_gifs/shrs.gif", icon: "🌦️" },
+                95: { description: "Thunderstorm", gif: "weather_gifs/thunder.gif", icon: "⛈️" },
+                45: { description: "Fog", gif: "weather_gifs/foggy.gif", icon: "🌫️" }
+            };
+
+            forecast.time.forEach((date, index) => {
+                const tempMax = forecast.temperature_2m_max[index];
+                const tempMin = forecast.temperature_2m_min[index];
+                const precipitation = forecast.precipitation_sum[index];
+                const weatherCode = forecast.weathercode[index];
+
+                let condition = weatherConditions[weatherCode] || weatherConditions[0];
+
+                const forecastHTML = `
+                    <div class="forecast-item">
+                        <img src="${condition.gif}" alt="${condition.description}" class="weather-gif">
+                        <div class="weather-details">
+                            <div class="weather-date">${date}</div>
+                            <div class="weather-condition">${condition.icon} ${condition.description}</div>
+                            <div class="weather-temp">
+                                <span class="temp-max"><span class="temp-icon">⬆️</span>High: ${tempMax}°C</span>
+                                <span class="temp-min"><span class="temp-icon">⬇️</span>Low: ${tempMin}°C</span>
+                            </div>
+                            <div class="precipitation"><span class="temp-icon">💧</span>Precipitation: ${precipitation} mm</div>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById("forecast").insertAdjacentHTML('beforeend', forecastHTML);
+            });
+
+            document.getElementById("weatherResult").style.display = "block";
+        }
+    </script>
+</body>
+</html>
