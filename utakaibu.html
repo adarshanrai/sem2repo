@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Utakaibu</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #062fe3;
+      --dark: #191414;
+      --light: #ffffff;
+      --gray: #535353;
+      --light-gray: #b3b3b3;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Circular', Helvetica, Arial, sans-serif;
+    }
+    
+    body {
+      background-color: #4568dc; 
+      background: -webkit-linear-gradient(to right, #4568dc, #b06ab3); 
+      background: linear-gradient(to right, #4568dc, #b06ab3);
+      color: var(--light);
+      min-height: 100vh;
+      padding: 20px;
+      background-image: linear-gradient(rgba(69, 104, 220, 0.7), rgba(176, 106, 179, 0.7)), 
+                        url('https://w.wallhaven.cc/full/x6/wallhaven-x6r5ro.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-blend-mode: overlay;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      margin-bottom: 40px;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--light);
+    }
+    
+    .logo i {
+      font-size: 28px;
+    }
+    
+    .search-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      text-align: center;
+      color: var(--light);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .search-box {
+      display: flex;
+      width: 100%;
+      max-width: 600px;
+      margin-bottom: 20px;
+    }
+    
+    #search {
+      flex: 1;
+      padding: 15px 20px;
+      border: none;
+      border-radius: 30px 0 0 30px;
+      font-size: 16px;
+      outline: none;
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .search-btn {
+      padding: 15px 25px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 0 30px 30px 0;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    
+    .search-btn:hover {
+      background-color: #497cf5;
+    }
+    
+    #output {
+      width: 100%;
+      min-height: 300px;
+      background-color: rgba(0, 0, 0, 0.4); /* Black with 20% opacity (80% transparent) */
+
+    
+      border-radius: 10px;
+      padding: 30px;
+      margin-top: 20px;
+      transition: all 0.3s;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100px;
+    }
+    
+    .spinner {
+      border: 5px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      border-top: 5px solid var(--light);
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .artist-result {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    
+    .artist-image {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      border: 3px solid var(--light);
+    }
+    
+    .track-result {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .track-header {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    
+    .track-image {
+      width: 150px;
+      height: 150px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 2px solid var(--light);
+    }
+    
+    .track-info {
+      flex: 1;
+    }
+    
+    .track-title {
+      font-size: 24px;
+      margin-bottom: 5px;
+      color: var(--light);
+    }
+    
+    .track-artist {
+      font-size: 18px;
+      color: var(--light);
+      opacity: 0.9;
+      margin-bottom: 10px;
+    }
+    
+    .track-meta {
+      display: flex;
+      gap: 15px;
+      color: var(--light);
+      opacity: 0.8;
+      font-size: 14px;
+    }
+    
+    .lyrics-container {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      line-height: 1.8;
+      font-size: 16px;
+      white-space: pre-line;
+      color: var(--light);
+    }
+    
+    .error-message {
+      color: var(--light);
+      text-align: center;
+      font-size: 18px;
+      padding: 20px;
+    }
+    
+    .popular-searches {
+      margin-top: 40px;
+    }
+    
+    .popular-searches h3 {
+      margin-bottom: 15px;
+      color: var(--light);
+    }
+    
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .tag {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: var(--light);
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .tag:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+    
+    footer {
+      margin-top: 60px;
+      text-align: center;
+      color: var(--light);
+      padding: 20px;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+    
+    @media (max-width: 768px) {
+      .track-header {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .track-info {
+        text-align: center;
+      }
+      
+      .track-meta {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <i class="fas fa-music"></i>
+        <span>𝙐𝙩𝙖𝙠𝙖𝙞𝙗𝙪</span>
+      </div>
+      <div class="nav">
+        
+      </div>
+    </header>
+    
+    <div class="search-container">
+      <h1>𝘿𝙞𝙨𝙘𝙤𝙫𝙚𝙧 𝙩𝙝𝙚 𝙝𝙖𝙣𝙙𝙨 𝙩𝙝𝙖𝙩 𝙨𝙝𝙖𝙥𝙚𝙙 𝙩𝙝𝙚 𝙨𝙤𝙪𝙣𝙙</h1>
+      <div class="search-box">
+        <input type="text" id="search" placeholder="Enter song or artist name..." autocomplete="off">
+        <button class="search-btn" onclick="search()">Search</button>
+      </div>
+      
+      <div id="output">
+        <p style="text-align: center; color: var(--light); opacity: 0.8;">Search for your favorite songs or artists to get started</p>
+      </div>
+      
+      <div class="popular-searches">
+        <h3>Popular searches:</h3>
+        <div class="tags">
+          <div class="tag" onclick="setSearch('Eminem')">Taylor Swift</div>
+          <div class="tag" onclick="setSearch('Ed Sheeran')">Ed Sheeran</div>
+          <div class="tag" onclick="setSearch('John Rai')">John Rai</div>
+          <div class="tag" onclick="setSearch('The Weeknd')">The Weeknd</div>
+          <div class="tag" onclick="setSearch('Blue')">Blue</div>
+          <div class="tag" onclick="setSearch('Arjit Singh')">Arjit Singh</div>
+        </div>
+      </div>
+    </div>
+    
+    
+  </div>
+
+  <script>
+    const headers = {
+      "x-rapidapi-key": "94603e25e5msh4e38dfd1ac604bdp1e508ejsnf0e90628871c",
+      "x-rapidapi-host": "spotify23.p.rapidapi.com"
+    };
+
+    function setSearch(query) {
+      document.getElementById("search").value = query;
+      search();
+    }
+
+    async function search() {
+      const query = document.getElementById("search").value.trim();
+      if (!query) return;
+      
+      const output = document.getElementById("output");
+      output.innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+        </div>
+      `;
+
+      try {
+        const res = await fetch(`https://spotify23.p.rapidapi.com/search/?q=${encodeURIComponent(query)}&type=multi`, { headers });
+        const data = await res.json();
+
+        const artist = data.artists?.items?.[0]?.data;
+        const track = data.tracks?.items?.[0]?.data;
+
+        
+        if (artist?.profile?.name?.toLowerCase() === query.toLowerCase()) {
+          const artistId = artist.uri.split(":")[2];
+          const artistRes = await fetch(`https://spotify23.p.rapidapi.com/artist_overview/?id=${artistId}`, { headers });
+          const artistData = await artistRes.json();
+
+          const profile = artistData?.data?.artist;
+          const image = profile.visuals.avatarImage?.sources?.[0]?.url || "https://i.scdn.co/image/ab6761610000e5eb0f08b008da9d91574819a694";
+          const followers = profile.stats?.followers || 0;
+          const name = profile?.profile?.name || query;
+
+          output.innerHTML = `
+            <div class="artist-result">
+              <img src="${image}" class="artist-image" alt="${name}">
+              <h2>${name}</h2>
+              <p><i class="fas fa-users"></i> ${followers.toLocaleString()} followers</p>
+              <p><i class="fas fa-guitar"></i> ${profile.genres?.join(", ") || "Genres not specified"}</p>
+            </div>
+          `;
+          return;
+        }
+
+      
+        if (track) {
+          const trackId = track.id;
+          const title = track.name || "Unknown Track";
+          const artistName = track.artists?.items?.[0]?.profile?.name || "Unknown Artist";
+          const albumImage = track.albumOfTrack?.coverArt?.sources?.[0]?.url || "https://i.scdn.co/image/ab67616d0000b2732a038d3bf875d23e4aeaa84e";
+          const durationMs = track.duration?.totalMilliseconds || 0;
+          
+      
+          const duration = new Date(durationMs).toISOString().substr(14, 5);
+
+          const lyricsRes = await fetch(`https://spotify23.p.rapidapi.com/track_lyrics/?id=${trackId}`, { headers });
+          const lyricsData = await lyricsRes.json();
+
+          const lyrics = lyricsData?.lyrics?.lines?.map(line => line.words).join("\n") || "Lyrics not available for this track.";
+          
+          output.innerHTML = `
+            <div class="track-result">
+              <div class="track-header">
+                <img src="${albumImage}" class="track-image" alt="${title}">
+                <div class="track-info">
+                  <h3 class="track-title">${title}</h3>
+                  <p class="track-artist">${artistName}</p>
+                  <div class="track-meta">
+                    <span><i class="far fa-clock"></i> ${duration}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="lyrics-container">
+                <h4><i class="fas fa-quote-left"></i> Lyrics</h4>
+                <p>${lyrics}</p>
+              </div>
+            </div>
+          `;
+        } else {
+          output.innerHTML = `
+            <div class="error-message">
+              <i class="fas fa-exclamation-circle"></i>
+              <p>No results found for "${query}"</p>
+              <p>Try a different search term</p>
+            </div>
+          `;
+        }
+
+      } catch (err) {
+        console.error(err);
+        output.innerHTML = `
+          <div class="error-message">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>An error occurred while searching</p>
+            <p>Please try again later</p>
+          </div>
+        `;
+      }
+    }
+    
+    
+    document.getElementById("search").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        search();
+      }
+    });
+  </script>
+</body>
+</html>
